@@ -1,0 +1,8 @@
+[package]
+name = "string-parsing"
+version = "0.1.0"
+authors = ["steavot <tomsteavenson@gmail.com>"]
+
+[dependencies]
+chrono = "0.4.0"
+
