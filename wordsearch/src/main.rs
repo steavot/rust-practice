@@ -14,6 +14,10 @@ const N: usize = 3;
 static GRID: [[char; N]; N] = [['T', 'I', 'T'], ['A', 'I', 'A'], ['A', 'A', 'B']];
 type Grid = [[char; N]; N];
 
+fn find_word_in_grid(gird: &Grid, word: &str) -> Result<(Point, Point), ()> {
+
+}
+
 fn find_word_from_point(grid: &Grid, point: &Point, word: &str) -> Result<(Point, Point), ()> {
     match Direction::iter_variants().fold(Err(()), |acc, x| match (acc, x) {
         (Ok(end_point), _) => Ok(end_point),
