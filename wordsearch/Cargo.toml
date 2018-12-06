@@ -5,3 +5,6 @@ authors = ["steavot <tomsteavenson@gmail.com>"]
 
 [dependencies]
 failure = "0.1"
+custom_derive = "0.1"
+enum_derive = "0.1"
+
