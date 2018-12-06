@@ -26,7 +26,7 @@ impl fmt::Display for Point {
 }
 
 impl Point {
-    pub fn new_translated(&self, direction: Direction, udelta: usize) -> Point {
+    pub fn translate(&self, direction: &Direction, udelta: usize) -> Point {
         let delta = udelta as isize;
         match direction {
             Direction::Up => Point {
@@ -80,7 +80,7 @@ mod tests {
     fn translation() {
         let a = Point { x: 1, y: 2 };
         let direction = Direction::DownLeft;
-        let b = a.new_translated(&direction, 2);
+        let b = a.translate(&direction, 2);
         println!("{}", a);
         assert_eq!(b, Point { x: -1, y: 4 });
     }

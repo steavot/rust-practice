@@ -55,16 +55,19 @@ mod tests {
     #[test]
     fn all_variants() {
         let vars: DirectionVariants = Direction::iter_variants();
-        assert_eq!(vars.collect::<Vec<_>>(), vec![
-                   Direction::Up,
-                   Direction::UpRight,
-                   Direction::Right,
-                   Direction::DownRight,
-                   Direction::Down,
-                   Direction::DownLeft,
-                   Direction::Left,
-                   Direction::UpLeft,
-        ]);
+        assert_eq!(
+            vars.collect::<Vec<_>>(),
+            vec![
+                Direction::Up,
+                Direction::UpRight,
+                Direction::Right,
+                Direction::DownRight,
+                Direction::Down,
+                Direction::DownLeft,
+                Direction::Left,
+                Direction::UpLeft,
+            ]
+        );
     }
 
     #[test]
@@ -78,24 +81,36 @@ mod tests {
     #[test]
     fn all_variants_displayed() {
         let varnames: DirectionVariantNames = Direction::iter_variant_names();
-        assert_eq!(varnames.collect::<Vec<_>>(), vec![
-            "Up", "UpRight", "Right", "DownRight", "Down", "DownLeft", "Left", "UpLeft",
-        ]);
+        assert_eq!(
+            varnames.collect::<Vec<_>>(),
+            vec![
+                "Up",
+                "UpRight",
+                "Right",
+                "DownRight",
+                "Down",
+                "DownLeft",
+                "Left",
+                "UpLeft",
+            ]
+        );
     }
 
     #[test]
     fn all_variants_negated() {
         let negvars = Direction::iter_variants().map(|var| var.neg());
-        assert_eq!(negvars.collect::<Vec<_>>(), vec![
-            Direction::Down,
-            Direction::DownLeft,
-            Direction::Left,
-            Direction::UpLeft,
-            Direction::Up,
-            Direction::UpRight,
-            Direction::Right,
-            Direction::DownRight,
-        ]);
+        assert_eq!(
+            negvars.collect::<Vec<_>>(),
+            vec![
+                Direction::Down,
+                Direction::DownLeft,
+                Direction::Left,
+                Direction::UpLeft,
+                Direction::Up,
+                Direction::UpRight,
+                Direction::Right,
+                Direction::DownRight,
+            ]
+        );
     }
 }
-
