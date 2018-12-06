@@ -26,7 +26,8 @@ impl fmt::Display for Point {
 }
 
 impl Point {
-    pub fn new_translated(&self, direction: &Direction, delta: isize) -> Point {
+    pub fn new_translated(&self, direction: Direction, udelta: usize) -> Point {
+        let delta = udelta as isize;
         match direction {
             Direction::Up => Point {
                 x: self.x,

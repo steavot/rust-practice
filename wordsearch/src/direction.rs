@@ -3,7 +3,7 @@
 use std::ops::Neg;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, Eq, EnumDisplay, NextVariant, PrevVariant,
+    #[derive(Debug, PartialEq, Eq, EnumDisplay, NextVariant, PrevVariant, Clone,
         IterVariants(DirectionVariants), IterVariantNames(DirectionVariantNames))]
     pub enum Direction {
         Up,
