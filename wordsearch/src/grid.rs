@@ -202,6 +202,10 @@ mod tests {
         let mygrid = Grid::new(wordgrid);
         let myword = "TAB";
         assert_eq!(mygrid.contains_word(&myword), Ok((Point { x:2, y:0 }, Point {x:2, y:2})));
+        let myword = "AB";
+        assert_eq!(mygrid.contains_word(&myword), Ok((Point { x:2, y:1 }, Point {x:2, y:2})));
+        let myword = "BII";
+        assert_eq!(mygrid.contains_word(&myword), Err(()));
     }
 
 
