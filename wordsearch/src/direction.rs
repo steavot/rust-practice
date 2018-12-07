@@ -37,7 +37,6 @@ impl Neg for Direction {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::iter::Map;
 
     #[test]
     fn print_direction() {

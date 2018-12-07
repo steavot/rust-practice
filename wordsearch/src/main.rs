@@ -8,11 +8,6 @@ mod direction;
 mod grid;
 mod gridpoints;
 
-use direction::Direction;
-use failure::Error;
-use gridpoints::Point;
-use std::ops::Neg;
-
 fn main() {
     println!("Hello, world!");
 }
