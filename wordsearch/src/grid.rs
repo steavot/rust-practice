@@ -59,15 +59,12 @@ impl Grid {
     fn word_exists_from_point(&self, word: &str, point: &Point) -> Result<Point, ()> {
         // fold over all possible directions, accumulator being success
         // finding word in previous direction.
-        Direction::iter_variants().fold(
-            Err(()),
-            |acc, x| match (acc, x) {
-                // OK we've found it already, do nothing.
-                (Ok(end_point), _) => Ok(end_point),
-                // Err we've not found it yet, look in this direction.
-                (Err(_), direction) => self.word_in_direction_from_point(word, &direction, point),
-            },
-        )
+        Direction::iter_variants().fold(Err(()), |acc, x| match (acc, x) {
+            // OK we've found it already, do nothing.
+            (Ok(end_point), _) => Ok(end_point),
+            // Err we've not found it yet, look in this direction.
+            (Err(_), direction) => self.word_in_direction_from_point(word, &direction, point),
+        })
     }
 
     pub fn contains_word(&self, word: &str) -> Result<(Point, Point), ()> {
@@ -81,16 +78,27 @@ impl Grid {
                     // acc: Result<Point,Point>
                     |acc, x| match (acc, x) {
                         (Ok((start_point, end_point)), _) => Ok((start_point, end_point)),
-                        (Err(_), x) => match self.word_exists_from_point(word, &Point{x: x as isize, y:y as isize}) {
-                            Ok(end_point) => Ok((Point{x: x as isize, y: y as isize}, end_point)),
-                            Err(_) => Err(())
-                        }
-                    }
-                )
-            }
+                        (Err(_), x) => match self.word_exists_from_point(
+                            word,
+                            &Point {
+                                x: x as isize,
+                                y: y as isize,
+                            },
+                        ) {
+                            Ok(end_point) => Ok((
+                                Point {
+                                    x: x as isize,
+                                    y: y as isize,
+                                },
+                                end_point,
+                            )),
+                            Err(_) => Err(()),
+                        },
+                    },
+                ),
+            },
         )
     }
-
 }
 
 #[cfg(test)]
@@ -136,7 +144,10 @@ mod tests {
         let myword = "BIT";
         let mydirection = Direction::UpLeft;
         let mypoint = Point { x: 2, y: 2 };
-        assert_eq!(mygrid.word_in_direction_from_point(&myword, &mydirection, &mypoint), Ok(Point { x:0, y:0 }));
+        assert_eq!(
+            mygrid.word_in_direction_from_point(&myword, &mydirection, &mypoint),
+            Ok(Point { x: 0, y: 0 })
+        );
     }
 
     #[test]
@@ -150,13 +161,22 @@ mod tests {
         let myword = "BIT";
         let baddirection = Direction::Up;
         let mypoint = Point { x: 2, y: 2 };
-        assert_eq!(mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint), Err(()));
+        assert_eq!(
+            mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint),
+            Err(())
+        );
 
         let baddirection = Direction::Down;
-        assert_eq!(mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint), Err(()));
+        assert_eq!(
+            mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint),
+            Err(())
+        );
 
         let mypoint = Point { x: 0, y: 2 };
-        assert_eq!(mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint), Err(()));
+        assert_eq!(
+            mygrid.word_in_direction_from_point(&myword, &baddirection, &mypoint),
+            Err(())
+        );
     }
 
     #[test]
@@ -169,7 +189,10 @@ mod tests {
         let mygrid = Grid::new(wordgrid);
         let myword = "TIT";
         let mypoint = Point { x: 2, y: 0 };
-        assert_eq!(mygrid.word_exists_from_point(&myword, &mypoint), Ok(Point { x:0, y:0 }));
+        assert_eq!(
+            mygrid.word_exists_from_point(&myword, &mypoint),
+            Ok(Point { x: 0, y: 0 })
+        );
     }
 
     #[test]
@@ -201,16 +224,17 @@ mod tests {
         ];
         let mygrid = Grid::new(wordgrid);
         let myword = "TAB";
-        assert_eq!(mygrid.contains_word(&myword), Ok((Point { x:2, y:0 }, Point {x:2, y:2})));
+        assert_eq!(
+            mygrid.contains_word(&myword),
+            Ok((Point { x: 2, y: 0 }, Point { x: 2, y: 2 }))
+        );
         let myword = "AB";
-        assert_eq!(mygrid.contains_word(&myword), Ok((Point { x:2, y:1 }, Point {x:2, y:2})));
+        assert_eq!(
+            mygrid.contains_word(&myword),
+            Ok((Point { x: 2, y: 1 }, Point { x: 2, y: 2 }))
+        );
         let myword = "BII";
         assert_eq!(mygrid.contains_word(&myword), Err(()));
     }
-
-
-
-
-
 
 }
