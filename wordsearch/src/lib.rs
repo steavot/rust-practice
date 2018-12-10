@@ -3,15 +3,11 @@ extern crate custom_derive;
 #[macro_use]
 extern crate enum_derive;
 
-
 mod direction;
 mod grid;
 mod gridpoints;
 
-fn find_words_in_series() {
-
-
-}
+fn find_words_in_series() {}
 
 #[cfg(test)]
 mod tests {
@@ -43,6 +39,5 @@ mod tests {
             "SANTA",
             "WREATH",
         ];
-
     }
 }

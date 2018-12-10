@@ -22,11 +22,13 @@ impl Grid {
             Some(row) => match row.get(position.x as usize) {
                 // x coordinate off the grid so... nope
                 None => None,
-                Some(gridchar) => if *gridchar == letter {
-                    Some(())
-                } else {
-                    None
-                },
+                Some(gridchar) => {
+                    if *gridchar == letter {
+                        Some(())
+                    } else {
+                        None
+                    }
+                }
             },
         }
     }
