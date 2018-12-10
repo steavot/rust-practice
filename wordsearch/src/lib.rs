@@ -10,6 +10,8 @@ mod gridpoints;
 use crate::gridpoints::Point;
 use crate::grid::Grid;
 use std::collections::HashMap;
+use std::sync::mpsc;
+use std::thread;
 
 pub fn find_words_in_series(wordgrid: Vec<Vec<char>>, words: Vec<&str>) -> HashMap<&str, Option<(Point, Point)>>{
     let grid = Grid::new(wordgrid);
@@ -18,6 +20,26 @@ pub fn find_words_in_series(wordgrid: Vec<Vec<char>>, words: Vec<&str>) -> HashM
         acc.insert(word, grid.contains_word(word));
         acc
     })
+}
+
+pub fn find_words_in_channels<'a>(wordgrid: Vec<Vec<char>>, words: &'a Vec<&str>) -> HashMap<&'a str, Option<(Point, Point)>>{
+    let mastergrid = Grid::new(wordgrid);
+    let (tx, rx) = mpsc::channel();
+
+    for word in words {
+        let this_word = word.clone();
+        let grid = mastergrid.clone();
+        let transmit = mpsc::Sender::clone(&tx);
+        thread::spawn(move || {
+            transmit.send((word, grid.contains_word(word))).unwrap();
+        });
+    }
+
+    let mut answers = HashMap::new();
+    for (word, answer) in rx {
+        answers.insert(*word, answer);
+    }
+    answers
 }
 
 fn pretty_print_grid(wordgrid: Vec<Vec<char>>) {
