@@ -1,6 +1,6 @@
 // module to hold grid for word search
-use direction::Direction;
-use gridpoints::Point;
+use crate::direction::Direction;
+use crate::gridpoints::Point;
 
 use std::ops::Neg;
 

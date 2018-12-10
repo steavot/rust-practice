@@ -10,7 +10,7 @@
 //           2
 //           3
 //
-use direction::Direction;
+use crate::direction::Direction;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
