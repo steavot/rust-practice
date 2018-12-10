@@ -2,8 +2,10 @@
 use crate::direction::Direction;
 use crate::gridpoints::Point;
 
+use std::iter::FromIterator;
 use std::ops::Neg;
 
+#[derive(Clone)]
 pub struct Grid {
     grid: Box<Vec<Vec<char>>>,
 }
@@ -101,6 +103,52 @@ impl Grid {
             },
         )
     }
+
+    pub fn pretty_print(&self) {
+        let max_x = self.grid.iter().fold(
+            0,
+            |acc, x| {
+                if acc > x.len() {
+                    acc
+                } else {
+                    x.len()
+                }
+            }
+        );
+
+        let mut boundry_vec = vec!['_'; max_x*2 + 1];
+        boundry_vec.insert(0, ' ');
+        boundry_vec.insert(0, ' ');
+        boundry_vec.push(' ');
+        let boundry = String::from_iter(boundry_vec);
+
+        let mut boundry2_vec = vec![' '; max_x*2 + 1];
+        boundry2_vec.insert(0, '|');
+        boundry2_vec.push('|');
+        let boundry2 = String::from_iter(boundry2_vec);
+
+        println!("{:?}", boundry);
+        println!("{:?}", boundry2);
+
+        for row in self.grid.iter() {
+            let mut row_vec = Vec::new();
+            row_vec.push('|');
+            row_vec.push(' ');
+            for letter in row.iter() {
+                row_vec.push(*letter);
+                row_vec.push(' ');
+            }
+            row_vec.push('|');
+            let row_string = String::from_iter(row_vec);
+            println!("{:?}", row_string);
+        }
+        let mut boundry3_vec = vec!['_'; max_x*2 + 1];
+        boundry3_vec.insert(0, '|');
+        boundry3_vec.push('|');
+        let boundry3 = String::from_iter(boundry3_vec);
+        println!("{:?}", boundry3);
+    }
+
 }
 
 #[cfg(test)]

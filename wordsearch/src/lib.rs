@@ -7,12 +7,38 @@ mod direction;
 mod grid;
 mod gridpoints;
 
-fn find_words_in_series() {}
+use crate::gridpoints::Point;
+use crate::grid::Grid;
+use std::collections::HashMap;
+
+pub fn find_words_in_series(wordgrid: Vec<Vec<char>>, words: Vec<&str>) -> HashMap<&str, Option<(Point, Point)>>{
+    let grid = Grid::new(wordgrid);
+    // taking advantage of non-lexical lifetimes in 2018
+    words.iter().fold(HashMap::new(), |mut acc, word| {
+        acc.insert(word, grid.contains_word(word));
+        acc
+    })
+}
+
+fn pretty_print_grid(wordgrid: Vec<Vec<char>>) {
+    let grid = Grid::new(wordgrid);
+    grid.pretty_print();
+}
+
+fn pretty_print_answers(answers: HashMap<&str, Option<(Point, Point)>>) {
+    for (word, answer) in &answers {
+        match answer {
+            None => println!("{}: Not Found", word),
+            Some((start, end)) => println!("{}: {}, {}", word, start, end),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    // cargo test test_series -- --nocapture
     #[test]
     fn test_series() {
         let wordgrid = vec![
@@ -39,5 +65,10 @@ mod tests {
             "SANTA",
             "WREATH",
         ];
+
+        pretty_print_grid(wordgrid.clone());
+        let answers = find_words_in_series(wordgrid, words);
+        pretty_print_answers(answers);
     }
+
 }
