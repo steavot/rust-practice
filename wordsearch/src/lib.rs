@@ -34,6 +34,7 @@ pub fn find_words_in_channels(wordgrid: Vec<Vec<char>>, words: Vec<String>) -> H
             transmit.send((word.clone(), grid.contains_word(&word))).unwrap();
         });
     }
+    drop(tx);
 
     let mut answers = HashMap::new();
     for (word, answer) in rx {
@@ -151,7 +152,6 @@ mod tests {
 
     // cargo test test_parallel_channels -- --nocapture
     #[test]
-    #[ignore]
     fn test_parallel_channels() {
         let wordgrid = vec![
             vec!['N', 'D', 'F', 'T', 'R', 'E', 'E', 'E', 'A', 'P'],
