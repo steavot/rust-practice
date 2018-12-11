@@ -151,6 +151,7 @@ mod tests {
 
     // cargo test test_parallel_channels -- --nocapture
     #[test]
+    #[ignore]
     fn test_parallel_channels() {
         let wordgrid = vec![
             vec!['N', 'D', 'F', 'T', 'R', 'E', 'E', 'E', 'A', 'P'],
