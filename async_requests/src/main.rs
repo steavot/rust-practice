@@ -6,6 +6,8 @@
 // that I'm adapting.
 // https://github.com/seanmonstar/reqwest/blob/master/examples/async_multiple_requests.rs
 //
+#![recursion_limit="128"]
+
 use failure::{format_err, Error};
 use futures::{
     future::{err, join_all, ok},
@@ -62,9 +64,8 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
 }
 
 fn main() {
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    //    let results: Vec<Result<SlideshowContainer, Error>> = rt
-    //        .block_on(fetch())
-    //        .map(|things| things.collect::<Vec<_>>())
-    //        .unwrap();
+    let mut rt = tokio::runtime::Runtime::new().unwrap();
+        let results: Vec<Result<SlideshowContainer, Error>>  = rt
+            .block_on(fetch())
+            .unwrap();
 }
