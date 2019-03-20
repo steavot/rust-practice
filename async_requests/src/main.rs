@@ -1,18 +1,19 @@
-// goal here is to send a bunch of requests but
-// instead of just failing of one of them fails,
+// The goal here is to send a bunch of requests but
+// instead of just failing if one of them fails,
 // return a seperate result for each request.
 //
 // credit to seamonster for example usage of reqwest::async
-// that I'm adapting.
+// that I've used as a starting point for this task.
 // https://github.com/seanmonstar/reqwest/blob/master/examples/async_multiple_requests.rs
 //
 #![recursion_limit = "128"]
 
 use failure::{format_err, Error};
 use futures::{
-    future::{err, join_all, ok},
+    future::{join_all, ok},
     Future,
 };
+use log::debug;
 use reqwest::r#async::{Client, Response};
 use serde_derive::Deserialize;
 
@@ -44,8 +45,16 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
             client
                 .get(*url)
                 .send()
+                .then(|x| {
+                    debug!("sent request");
+                    x
+                })
                 .and_then(json)
                 .map_err(|_| format_err!("whoopsie!"))
+                .then(|x| {
+                    debug!("parsed response");
+                    x
+                })
         })
         .collect::<Vec<_>>();
 
@@ -64,6 +73,17 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
 }
 
 fn main() {
+    env_logger::init();
+
     let mut rt = tokio::runtime::Runtime::new().unwrap();
-    let results: Vec<Result<SlideshowContainer, Error>> = rt.block_on(fetch()).unwrap();
+    let mut results: Vec<Result<SlideshowContainer, Error>> = rt
+        .block_on(fetch())
+        // We unwrap here because it's impossible for our joined future to return Err.
+        .unwrap();
+
+    results.push(Err(format_err!("Let's pretend one request failed")));
+
+    for response in &results {
+        println!("{:?}", response);
+    }
 }
