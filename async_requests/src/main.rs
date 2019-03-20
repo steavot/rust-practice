@@ -54,6 +54,7 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
                 Ok(slideshow) => ok(Ok(slideshow)),
                 Err(whoopsie) => ok(Err(whoopsie)),
             })
+        // is the err value of the future inferred by type declaration of this function?
         })
         .collect::<Vec<_>>();
 
