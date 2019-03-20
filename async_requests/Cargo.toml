@@ -1,0 +1,13 @@
+[package]
+name = "async_requests"
+version = "0.1.0"
+authors = ["steavot <tomsteavenson@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+tokio = "0.1.17"
+reqwest = "0.9.11"
+futures = "0.1.25"
+serde = "1.0.89"
+serde_derive = "1.0.89"
+failure = "0.1.5"
