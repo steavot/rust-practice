@@ -6,7 +6,7 @@
 // that I'm adapting.
 // https://github.com/seanmonstar/reqwest/blob/master/examples/async_multiple_requests.rs
 //
-#![recursion_limit="128"]
+#![recursion_limit = "128"]
 
 use failure::{format_err, Error};
 use futures::{
@@ -56,7 +56,7 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
                 Ok(slideshow) => ok(Ok(slideshow)),
                 Err(whoopsie) => ok(Err(whoopsie)),
             })
-        // is the err value of the future inferred by type declaration of this function?
+            // is the err value of the future inferred by type declaration of this function?
         })
         .collect::<Vec<_>>();
 
@@ -65,7 +65,5 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
 
 fn main() {
     let mut rt = tokio::runtime::Runtime::new().unwrap();
-        let results: Vec<Result<SlideshowContainer, Error>>  = rt
-            .block_on(fetch())
-            .unwrap();
+    let results: Vec<Result<SlideshowContainer, Error>> = rt.block_on(fetch()).unwrap();
 }
