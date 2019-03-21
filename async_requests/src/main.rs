@@ -13,7 +13,6 @@ use futures::{
     future::{join_all, ok},
     Future,
 };
-use log::debug;
 use reqwest::r#async::{Client, Response};
 use serde_derive::Deserialize;
 
@@ -64,16 +63,9 @@ fn fetch() -> impl Future<Item = Vec<(String, Result<SlideshowContainer, Error>)
                 client
                     .get(*url)
                     .send()
-                    .then(|x| {
-                        debug!("sent request");
-                        x
-                    })
+                    .and_then(|r| r.error_for_status())
                     .and_then(json)
-                    .map_err(|_| format_err!("whoopsie!"))
-                    .then(|x| {
-                        debug!("parsed response");
-                        x
-                    }),
+                    .map_err(|_| format_err!("whoopsie!")),
             )
         })
         .collect::<Vec<(String, _)>>();
