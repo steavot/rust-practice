@@ -36,10 +36,16 @@ struct SlideshowContainer {
 // So we'll create a future that can't fail, and it's Item will encapsulate
 // an expression of the various successes or failures of each request.
 //
+// I'm also going to pass the URL for each request back with that data
+// so results can be mapped to a URL string.
+//
 // I think on principle this might be an abuse of the Result Enum and perhaps
 // I should be using Either instead. https://docs.rs/either/
 // Either way...
-fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error = ()> {
+//
+// I'm using a Vec of tuples purely because we're using the same URL 3 times over.
+// If we had a set of URLs with no duplicates I'd use a HashMap.
+fn fetch() -> impl Future<Item = Vec<(String, Result<SlideshowContainer, Error>)>, Error = ()> {
     let client = Client::new();
 
     let urls = [
@@ -53,28 +59,31 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
     let initial_futures = urls
         .into_iter()
         .map(|url| {
-            client
-                .get(*url)
-                .send()
-                .then(|x| {
-                    debug!("sent request");
-                    x
-                })
-                .and_then(json)
-                .map_err(|_| format_err!("whoopsie!"))
-                .then(|x| {
-                    debug!("parsed response");
-                    x
-                })
+            (
+                url.to_string(),
+                client
+                    .get(*url)
+                    .send()
+                    .then(|x| {
+                        debug!("sent request");
+                        x
+                    })
+                    .and_then(json)
+                    .map_err(|_| format_err!("whoopsie!"))
+                    .then(|x| {
+                        debug!("parsed response");
+                        x
+                    }),
+            )
         })
-        .collect::<Vec<_>>();
+        .collect::<Vec<(String, _)>>();
 
     let final_futures = initial_futures
         .into_iter()
-        .map(|response| {
+        .map(|(url, response)| {
             response.then(|rsp| match rsp {
-                Ok(slideshow) => ok(Ok(slideshow)),
-                Err(whoopsie) => ok(Err(whoopsie)),
+                Ok(slideshow) => ok((url, Ok(slideshow))),
+                Err(whoopsie) => ok((url, Err(whoopsie))),
             })
             // Is the Error type of these futures inferred by type declaration of this function?...
             // must be.
@@ -88,12 +97,15 @@ fn main() {
     env_logger::init();
 
     let mut rt = tokio::runtime::Runtime::new().unwrap();
-    let mut results: Vec<Result<SlideshowContainer, Error>> = rt
+    let mut results: Vec<(String, Result<SlideshowContainer, Error>)> = rt
         .block_on(fetch())
         // We unwrap here because it's impossible for our joined future to return Err.
         .unwrap();
 
-    results.push(Err(format_err!("Let's pretend one request failed")));
+    results.push((
+        "not.a.url.com/nope".to_string(),
+        Err(format_err!("Let's pretend one request failed")),
+    ));
 
     for response in &results {
         println!("{:?}", response);
