@@ -28,6 +28,17 @@ struct SlideshowContainer {
     slideshow: Slideshow,
 }
 
+// The problem we face is that if we use the Error type of our futures
+// to track requests that fail, when we join_all and run the combined
+// future we'll either get a collection of Items or an Error.
+// That'll just be the first Error, and all our successes will be thrown away.
+//
+// So we'll create a future that can't fail, and it's Item will encapsulate
+// an expression of the various successes or failures of each request.
+//
+// I think on principle this might be an abuse of the Result Enum and perhaps
+// I should be using Either instead. https://docs.rs/either/
+// Either way...
 fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error = ()> {
     let client = Client::new();
 
@@ -65,7 +76,8 @@ fn fetch() -> impl Future<Item = Vec<Result<SlideshowContainer, Error>>, Error =
                 Ok(slideshow) => ok(Ok(slideshow)),
                 Err(whoopsie) => ok(Err(whoopsie)),
             })
-            // is the err value of the future inferred by type declaration of this function?
+            // Is the Error type of these futures inferred by type declaration of this function?...
+            // must be.
         })
         .collect::<Vec<_>>();
 
