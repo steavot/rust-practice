@@ -19,15 +19,10 @@ fn get_single_future(outcome: Outcome) -> impl Future<Item = String, Error = Err
 fn get_joined_future() -> impl Future<Item = Vec<Result<String, Error>>, Error = ()> {
     let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
 
-    let initial_futures = outcomes
+    let packed_futures = outcomes
         .into_iter()
-        .map(get_single_future)
-        .collect::<Vec<_>>();
-
-    let packed_futures = initial_futures
-        .into_iter()
-        .map(|result| {
-            result.then(|res| match res {
+        .map(|x| {
+            get_single_future(x).then(|res| match res {
                 Ok(message) => ok(Ok(message)),
                 Err(whoopsie) => ok(Err(whoopsie)),
             })

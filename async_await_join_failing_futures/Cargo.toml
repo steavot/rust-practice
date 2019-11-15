@@ -8,5 +8,4 @@ edition = "2018"
 
 [dependencies]
 futures = "0.3.1"
-tokio = "0.1.22"
 failure = "0.1.6"

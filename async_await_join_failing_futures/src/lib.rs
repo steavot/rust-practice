@@ -1,9 +1,7 @@
 use failure::{format_err, Error};
 use futures::{
-    join,
     future::join_all,
-    Future,
-    stream::FuturesUnordered,
+    executor::block_on,
 };
 
 enum Outcome {
@@ -29,14 +27,12 @@ async fn get_joined_future() -> Vec<Result<Result<String, Error>, Error>> {
                 Err(whoopsie) => Ok(Err(whoopsie)),
             }
         })
-        // .collect::<FuturesUnordered<_>>();
         .collect::<Vec<_>>();
 
     join_all(packed_futures).await
 
 }
 
-// pub fn get_results() -> Vec<Result<String, Error>> {
-//     let mut rt = tokio::runtime::Runtime::new().unwrap();
-//     rt.block_on(get_joined_future()).unwrap()
-// }
+pub fn get_results() -> Vec<Result<String, Error>> {
+    block_on(get_joined_future()).into_iter().map(|x| x.unwrap()).collect()
+}
