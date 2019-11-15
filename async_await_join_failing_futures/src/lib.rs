@@ -16,23 +16,23 @@ async fn get_single_future(outcome: Outcome) -> Result<String, Error> {
     }
 }
 
-async fn get_joined_future() -> Vec<Result<Result<String, Error>, Error>> {
+async fn get_joined_future() -> Vec<Result<String, Error>> {
     let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
 
     let packed_futures = outcomes
         .into_iter()
         .map(|outcome| async {
             match get_single_future(outcome).await {
-                Ok(message) => Ok(Ok(message)),
+                Ok(message) => Ok::<Result<String, Error>, Error>(Ok(message)),
                 Err(whoopsie) => Ok(Err(whoopsie)),
             }
         })
         .collect::<Vec<_>>();
 
-    join_all(packed_futures).await
-
+    join_all(packed_futures).await.into_iter().map(|x| x.unwrap()).collect()
 }
 
 pub fn get_results() -> Vec<Result<String, Error>> {
-    block_on(get_joined_future()).into_iter().map(|x| x.unwrap()).collect()
+    // block_on(get_joined_future()).into_iter().map(|x| x.unwrap()).collect()
+    block_on(get_joined_future())
 }
