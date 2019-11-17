@@ -1,3 +1,8 @@
+//!
+//! Get the results of a collection of futures.
+//!
+//! Using async await syntax and futures 0.3.
+//!
 use failure::{format_err, Error};
 use futures::{
     future::join_all,
@@ -22,8 +27,11 @@ async fn get_joined_future() -> Vec<Result<String, Error>> {
     let packed_futures = outcomes
         .into_iter()
         .map(|outcome| async {
+            // To avoid join_all() returning a single error as soon as
+            // one of these futures fails, pack the result of each future
+            // into an Ok which we'll unwrap below after joining.
             match get_single_future(outcome).await {
-                Ok(message) => Ok::<Result<String, Error>, Error>(Ok(message)),
+                Ok(message) => Ok::<Result<String, Error>, ()>(Ok(message)),
                 Err(whoopsie) => Ok(Err(whoopsie)),
             }
         })
@@ -33,6 +41,5 @@ async fn get_joined_future() -> Vec<Result<String, Error>> {
 }
 
 pub fn get_results() -> Vec<Result<String, Error>> {
-    // block_on(get_joined_future()).into_iter().map(|x| x.unwrap()).collect()
     block_on(get_joined_future())
 }
