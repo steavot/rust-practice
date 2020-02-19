@@ -7,6 +7,7 @@ use failure::{format_err, Error};
 use futures::{
     future::join_all,
     executor::block_on,
+stream::{FuturesUnordered, StreamExt as _},
 };
 
 enum Outcome {
@@ -24,22 +25,33 @@ async fn get_single_future(outcome: Outcome) -> Result<String, Error> {
 async fn get_joined_future() -> Vec<Result<String, Error>> {
     let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
 
-    let packed_futures = outcomes
+    let some_futures = outcomes
         .into_iter()
         .map(|outcome| async {
-            // To avoid join_all() returning a single error as soon as
-            // one of these futures fails, pack the result of each future
-            // into an Ok which we'll unwrap below after joining.
-            match get_single_future(outcome).await {
-                Ok(message) => Ok::<Result<String, Error>, ()>(Ok(message)),
-                Err(whoopsie) => Ok(Err(whoopsie)),
-            }
+            get_single_future(outcome).await
         })
         .collect::<Vec<_>>();
 
-    join_all(packed_futures).await.into_iter().map(|x| x.unwrap()).collect()
+    join_all(some_futures).await
 }
 
-pub fn get_results() -> Vec<Result<String, Error>> {
+async fn get_futures_via_stream() -> Vec<Result<String, Error>> {
+    let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
+
+    outcomes
+        .into_iter()
+        .map(|outcome| async {
+            get_single_future(outcome).await
+        })
+        .collect::<FuturesUnordered<_>>()
+        .collect()
+        .await
+}
+
+pub fn get_results_with_join() -> Vec<Result<String, Error>> {
     block_on(get_joined_future())
+}
+
+pub fn get_results_with_stream() -> Vec<Result<String, Error>> {
+    block_on(get_futures_via_stream())
 }
