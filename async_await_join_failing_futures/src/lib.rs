@@ -5,9 +5,7 @@
 //!
 use failure::{format_err, Error};
 use futures::{
-    future::join_all,
     executor::block_on,
-stream::{FuturesUnordered, StreamExt as _},
 };
 
 enum Outcome {
@@ -23,6 +21,8 @@ async fn get_single_future(outcome: Outcome) -> Result<String, Error> {
 }
 
 async fn get_joined_future() -> Vec<Result<String, Error>> {
+    use futures::future::join_all;
+
     let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
 
     let some_futures = outcomes
@@ -36,6 +36,8 @@ async fn get_joined_future() -> Vec<Result<String, Error>> {
 }
 
 async fn get_futures_via_stream() -> Vec<Result<String, Error>> {
+    use futures::stream::{FuturesUnordered, StreamExt as _};
+
     let outcomes = vec![Outcome::Good, Outcome::Bad, Outcome::Good];
 
     outcomes
@@ -43,7 +45,11 @@ async fn get_futures_via_stream() -> Vec<Result<String, Error>> {
         .map(|outcome| async {
             get_single_future(outcome).await
         })
+        // First we collect the collection of futures into the
+        // stream type `FuturesUnordered`.
         .collect::<FuturesUnordered<_>>()
+        // Then we collect the stream into a future, and await.
+        // This collect() method is from the StreamExt trait.
         .collect()
         .await
 }
