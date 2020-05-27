@@ -1,0 +1,7 @@
+.town_anchor: &town { town: greenbow }
+name: brian
+age: 42
+other:
+  !!merge '<<' : *town
+  some: field
+
