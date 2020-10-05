@@ -1,0 +1,9 @@
+name: example
+aliases:
+  - foo
+  - bar
+  - baz
+data:
+  some: data
+  with: 3
+  fields: true
